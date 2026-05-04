@@ -1,0 +1,28 @@
+{% set game_title="Sonni Top!" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div x-data="guess()" class="max-w-md mx-auto text-center">
+  <p class="text-white/70 mb-4">1 dan 100 gacha bo'lgan sonni topishga harakat qil. Kam urinish — ko'p ball!</p>
+  <div class="flex gap-2 justify-center mb-4">
+    <input type="number" x-model.number="val" min="1" max="100" class="px-4 py-3 rounded-lg bg-bg-700 border border-white/20 focus:border-neon-cyan focus:outline-none w-32 text-center text-xl" />
+    <button @click="check()" class="px-6 py-3 rounded-lg bg-gradient-to-r from-neon-cyan to-neon-purple font-bold">Tekshir</button>
+  </div>
+  <div class="text-xl font-bold mb-2 min-h-[2rem]" :class="color" x-text="msg"></div>
+  <div class="text-white/60">Urinishlar: <span class="text-neon-cyan font-bold" x-text="tries"></span></div>
+  <button @click="reset()" class="mt-4 px-4 py-2 text-sm rounded-lg border border-white/20 hover:border-neon-pink">Qayta boshlash</button>
+</div>
+{% endblock %}
+{% block game_script %}<script>
+function guess(){return {
+  target: Math.floor(Math.random()*100)+1, val:50, tries:0, msg:'', color:'', done: false,
+  check(){ if(!this.val || this.done) return; this.tries++;
+    if(this.val===this.target){
+      this.done = true;
+      const pts = Math.max(5, 21-this.tries);
+      this.msg=`✅ Top! ${this.tries} urinishda. +${pts} ball`; this.color='text-neon-lime';
+      awardPoints('guess', pts);
+    } else if(this.val<this.target){this.msg='⬆ Kattaroq son'; this.color='text-neon-cyan';}
+    else {this.msg='⬇ Kichikroq son'; this.color='text-neon-pink';}
+  },
+  reset(){ this.target=Math.floor(Math.random()*100)+1; this.tries=0; this.msg=''; this.val=50; this.done=false; }
+}}
+</script>{% endblock %}

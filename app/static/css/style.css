@@ -1,0 +1,6 @@
+body { -webkit-font-smoothing: antialiased; }
+canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+.game-canvas { background: #04040f; border: 1px solid rgba(0,240,255,.4); border-radius: 12px; box-shadow: 0 0 30px rgba(0,240,255,.3); }
+button:active { transform: scale(.97); }
+@keyframes pulseGlow { 0%,100% { box-shadow: 0 0 20px rgba(255,43,214,.5);} 50% { box-shadow: 0 0 40px rgba(0,240,255,.7);} }
+.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }

@@ -1,0 +1,86 @@
+{% set game_title="Mina Qidiruvchi 💣" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div x-data="mines()" class="max-w-md mx-auto text-center touch-none">
+  <div class="flex justify-between items-center mb-4">
+    <div class="text-white/70">Minalar: <span class="text-neon-pink font-bold" x-text="bombs"></span></div>
+    <div class="text-white/70">Vaqt: <span class="text-neon-cyan font-bold" x-text="time"></span>s</div>
+  </div>
+  
+  <div class="inline-grid grid-cols-10 gap-1 p-2 bg-white/5 rounded-xl border border-white/10" @contextmenu.prevent>
+    <template x-for="(cell, i) in grid" :key="i">
+      <div class="w-8 h-8 rounded sm:w-10 sm:h-10 flex items-center justify-center font-bold text-xl cursor-pointer transition select-none"
+           :class="{
+             'bg-white/20 hover:bg-white/30': !cell.open,
+             'bg-bg-800 shadow-inner': cell.open,
+             'text-neon-pink': cell.open && cell.bomb,
+             'text-neon-lime': cell.flagged && !cell.open
+           }"
+           @click="click(i)" @contextmenu.prevent="flag(i)">
+        <span x-show="cell.open && cell.bomb">💣</span>
+        <span x-show="cell.open && !cell.bomb && cell.n>0" x-text="cell.n" 
+              :class="['','text-[#00f0ff]','text-[#bfff00]','text-[#ff2bd6]','text-[#ff003c]','text-[#ffaa00]','text-[#00ffaa]','text-black','text-gray-500'][cell.n]"></span>
+        <span x-show="!cell.open && cell.flagged">🚩</span>
+      </div>
+    </template>
+  </div>
+
+  <div class="mt-6">
+    <button @click="reset()" class="px-6 py-2 rounded-lg border border-white/20 hover:border-neon-pink">Qayta boshlash</button>
+  </div>
+  
+  <div x-show="status==='won'" class="mt-4 text-2xl font-bold text-neon-lime" style="display:none">G'alaba! 🎉 (+40 ball)</div>
+  <div x-show="status==='lost'" class="mt-4 text-2xl font-bold text-neon-pink" style="display:none">Yutqazdingiz! 💥</div>
+</div>
+{% endblock %}
+
+{% block game_script %}<script>
+function mines(){return {
+  grid: [], w:10, h:10, bombs:15, status:'play', time:0, timer:null, firstClick:true,
+  init(){ this.reset(); },
+  reset(){
+    this.status='play'; this.time=0; this.firstClick=true; clearInterval(this.timer);
+    this.grid = Array(this.w*this.h).fill().map(()=>({open:false, bomb:false, flagged:false, n:0}));
+  },
+  placeBombs(firstI){
+    let b = 0;
+    while(b<this.bombs){
+      let i = Math.floor(Math.random()*this.grid.length);
+      if(i!==firstI && !this.grid[i].bomb) { this.grid[i].bomb=true; b++; }
+    }
+    for(let r=0;r<this.h;r++) for(let c=0;c<this.w;c++){
+      let n=0;
+      for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+        if(r+dr>=0&&r+dr<this.h&&c+dc>=0&&c+dc<this.w && this.grid[(r+dr)*this.w+(c+dc)].bomb) n++;
+      }
+      this.grid[r*this.w+c].n=n;
+    }
+  },
+  click(i){
+    if(this.status!=='play' || this.grid[i].open || this.grid[i].flagged) return;
+    if(this.firstClick){ this.placeBombs(i); this.firstClick=false; this.timer=setInterval(()=>this.time++, 1000); }
+    if(this.grid[i].bomb){ this.status='lost'; this.revealAll(); clearInterval(this.timer); return; }
+    this.flood(i);
+    this.checkWin();
+  },
+  flag(i){
+    if(this.status!=='play' || this.grid[i].open) return;
+    this.grid[i].flagged = !this.grid[i].flagged;
+  },
+  flood(i){
+    if(this.grid[i].open) return;
+    this.grid[i].open=true;
+    if(this.grid[i].n>0) return;
+    let r = Math.floor(i/this.w), c = i%this.w;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(r+dr>=0&&r+dr<this.h&&c+dc>=0&&c+dc<this.w) this.flood((r+dr)*this.w+(c+dc));
+    }
+  },
+  revealAll(){
+    this.grid.forEach(c=>{ if(c.bomb) c.open=true; });
+  },
+  checkWin(){
+    let won = this.grid.every(c => c.open || c.bomb);
+    if(won){ this.status='won'; clearInterval(this.timer); awardPoints('minesweeper', 40); }
+  }
+}}
+</script>{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="text-center py-16">
+  <h1 class="font-display font-black text-5xl md:text-7xl leading-tight">
+    <span class="bg-gradient-to-r from-neon-pink via-neon-cyan to-neon-lime bg-clip-text text-transparent">O'yna. Yut. Yuksal.</span>
+  </h1>
+  <p class="mt-6 text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+    ZorO'yin — eng zo'r o'zbekcha onlayn o'yinlar arenasi. Ball to'pla, premium o'yinlarni och va reytingda ko'taril!
+  </p>
+  <div class="mt-10 flex justify-center gap-4 flex-wrap">
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('main.dashboard') }}" class="px-8 py-4 rounded-xl font-bold bg-gradient-to-r from-neon-pink to-neon-purple shadow-pink hover:scale-105 transition">🎮 O'yinga kir</a>
+    {% else %}
+      <a href="{{ url_for('auth.register') }}" class="px-8 py-4 rounded-xl font-bold bg-gradient-to-r from-neon-pink to-neon-purple shadow-pink hover:scale-105 transition">🚀 Ro'yxatdan o'tish</a>
+      <a href="{{ url_for('auth.login') }}" class="px-8 py-4 rounded-xl font-bold border border-neon-cyan text-neon-cyan shadow-cyan hover:bg-neon-cyan/10 transition">Kirish</a>
+    {% endif %}
+    <a href="{{ url_for('main.leaderboard') }}" class="px-8 py-4 rounded-xl font-bold border border-white/20 hover:border-white/60 transition">🏆 Reyting</a>
+  </div>
+</section>
+
+<section class="grid md:grid-cols-3 gap-6 mt-12">
+  {% for item in [
+    {'i':'🎯','t':"9 ta o'yin",'d':"Bepul va premium o'yinlarning keng tanlovi"},
+    {'i':'⚡','t':'Ball tizimi','d':"Yutsang ball topasan, premiumlarni ochasan"},
+    {'i':'🏆','t':'Global reyting','d':"Eng zo'r o'yinchilar bilan raqobatlash"}
+  ] %}
+  <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-neon-cyan/50 hover:shadow-cyan transition">
+    <div class="text-4xl mb-3">{{ item.i }}</div>
+    <h3 class="font-display text-xl">{{ item.t }}</h3>
+    <p class="text-white/60 mt-2">{{ item.d }}</p>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

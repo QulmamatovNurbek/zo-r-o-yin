@@ -1,0 +1,49 @@
+{% set game_title="Oddiy Viktorina" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div x-data="quiz()" class="max-w-xl mx-auto">
+  <template x-if="!done">
+    <div>
+      <div class="flex justify-between text-sm text-white/60 mb-2"><span>Savol <span x-text="i+1"></span>/10</span><span>Ball: <span class="text-neon-cyan font-bold" x-text="score"></span></span></div>
+      <div class="h-2 rounded bg-white/10 mb-6 overflow-hidden"><div class="h-full bg-gradient-to-r from-neon-pink to-neon-cyan transition-all" :style="`width:${(i/10)*100}%`"></div></div>
+      <h3 class="text-xl font-bold mb-5" x-text="qs[i].q"></h3>
+      <div class="space-y-2">
+        <template x-for="(opt,k) in qs[i].opts" :key="k">
+          <button @click="answer(k)" :disabled="picked!==null"
+            class="w-full text-left px-4 py-3 rounded-lg border transition"
+            :class="picked===null?'bg-white/5 border-white/10 hover:border-neon-cyan':k===qs[i].a?'bg-neon-lime/20 border-neon-lime':k===picked?'bg-neon-pink/20 border-neon-pink':'bg-white/5 border-white/10 opacity-60'"
+            x-text="opt"></button>
+        </template>
+      </div>
+    </div>
+  </template>
+  <template x-if="done">
+    <div class="text-center py-8">
+      <div class="text-6xl mb-4">🎓</div>
+      <h2 class="font-display text-3xl font-black">Yakunlandi!</h2>
+      <p class="text-xl mt-2">Sening natijang: <span class="text-neon-cyan font-bold" x-text="score"></span>/10</p>
+      <p class="text-neon-lime mt-2">+<span x-text="score*5"></span> ball qo'shildi</p>
+      <button @click="reset()" class="mt-6 px-6 py-3 rounded-lg bg-gradient-to-r from-neon-pink to-neon-purple font-bold">Qaytadan</button>
+    </div>
+  </template>
+</div>
+{% endblock %}
+{% block game_script %}<script>
+function quiz(){return {
+  qs:[
+    {q:"O'zbekiston poytaxti?",opts:["Samarqand","Toshkent","Buxoro","Xiva"],a:1},
+    {q:"Quyosh sistemasidagi sayyoralar soni?",opts:["7","8","9","10"],a:1},
+    {q:"Eng baland tog' cho'qqisi?",opts:["K2","Everest","Elbrus","Mont Blanc"],a:1},
+    {q:"Suvning kimyoviy formulasi?",opts:["CO2","H2O","O2","NaCl"],a:1},
+    {q:"Amir Temur tug'ilgan yili?",opts:["1336","1370","1405","1280"],a:0},
+    {q:"Eng katta okean?",opts:["Atlantika","Hind","Tinch","Shimoliy Muz"],a:2},
+    {q:"Quyoshgacha bo'lgan sayyora?",opts:["Venera","Mars","Merkuriy","Yer"],a:2},
+    {q:"Pi sonining qiymati taxminan?",opts:["3.14","2.71","1.41","1.61"],a:0},
+    {q:"O'zbek bayrog'idagi ranglar soni?",opts:["2","3","4","5"],a:1},
+    {q:"Eng katta materik?",opts:["Afrika","Osiyo","Shimoliy Amerika","Antarktida"],a:1},
+  ], i:0, score:0, picked:null, done:false,
+  answer(k){ this.picked=k; if(k===this.qs[this.i].a) this.score++;
+    setTimeout(()=>{this.picked=null; this.i++; if(this.i>=10){this.done=true; if(this.score>0) awardPoints('quiz', this.score*5);}},900);
+  },
+  reset(){ this.qs.sort(()=>Math.random()-0.5); this.i=0; this.score=0; this.picked=null; this.done=false; }
+}}
+</script>{% endblock %}

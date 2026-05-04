@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{% block title %}ZorO'yin — Onlayn O'yinlar Arenasi{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { display: ['Orbitron','sans-serif'], body: ['Rubik','sans-serif'] },
+  colors: {
+    neon: { pink:'#ff2bd6', cyan:'#00f0ff', lime:'#bfff00', purple:'#7c3aed', yellow:'#ffe600' },
+    bg: { 900:'#06060f', 800:'#0b0b1f', 700:'#11112a' }
+  },
+  boxShadow: {
+    glow: '0 0 20px rgba(0,240,255,.6), 0 0 40px rgba(255,43,214,.3)',
+    pink: '0 0 25px rgba(255,43,214,.7)',
+    cyan: '0 0 25px rgba(0,240,255,.7)',
+  }
+}}}
+</script>
+</head>
+<body class="font-body bg-bg-900 text-white min-h-screen flex flex-col">
+<div class="fixed inset-0 -z-10 bg-gradient-to-br from-bg-900 via-[#10052a] to-bg-900"></div>
+<div class="fixed inset-0 -z-10 opacity-30 bg-[radial-gradient(circle_at_20%_20%,#ff2bd6_0%,transparent_40%),radial-gradient(circle_at_80%_60%,#00f0ff_0%,transparent_45%)]"></div>
+
+<header class="border-b border-white/10 backdrop-blur sticky top-0 z-50 bg-bg-900/70">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <a href="{{ url_for('main.index') }}" class="font-display font-black text-2xl tracking-widest bg-gradient-to-r from-neon-pink via-neon-purple to-neon-cyan bg-clip-text text-transparent drop-shadow">
+      ZorO'yin
+    </a>
+    <nav class="hidden md:flex gap-6 text-sm font-medium">
+      <a href="{{ url_for('main.index') }}" class="hover:text-neon-cyan transition">Bosh sahifa</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.dashboard') }}" class="hover:text-neon-cyan transition">O'yinlar</a>
+      {% endif %}
+      <a href="{{ url_for('main.leaderboard') }}" class="hover:text-neon-cyan transition">Reyting</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      {% if current_user.is_authenticated %}
+        <div class="px-3 py-1.5 rounded-full bg-gradient-to-r from-neon-pink/20 to-neon-cyan/20 border border-neon-cyan/40 shadow-cyan">
+          <span class="text-xs text-white/70">Ball:</span>
+          <span class="font-display font-bold text-neon-cyan">{{ current_user.points }}</span>
+        </div>
+        <span class="hidden sm:inline text-sm text-white/80">{{ current_user.username }}</span>
+        <a href="{{ url_for('auth.logout') }}" class="text-sm px-3 py-1.5 rounded-lg border border-white/20 hover:border-neon-pink hover:text-neon-pink transition">Chiqish</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="text-sm hover:text-neon-cyan">Kirish</a>
+        <a href="{{ url_for('auth.register') }}" class="text-sm px-3 py-1.5 rounded-lg bg-gradient-to-r from-neon-pink to-neon-purple shadow-pink hover:scale-105 transition">Ro'yxatdan o'tish</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="space-y-2 mb-6">
+      {% for cat, msg in messages %}
+        <div class="px-4 py-3 rounded-lg border backdrop-blur
+          {% if cat=='success' %}border-neon-lime/50 bg-neon-lime/10 text-neon-lime
+          {% elif cat=='danger' %}border-neon-pink/50 bg-neon-pink/10 text-neon-pink
+          {% elif cat=='warning' %}border-neon-yellow/50 bg-neon-yellow/10 text-neon-yellow
+          {% else %}border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan{% endif %}">
+          {{ msg }}
+        </div>
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="border-t border-white/10 py-6 text-center text-sm text-white/40">
+  © 2026 ZorO'yin · Uzbek tilidagi o'yinlar arenasi 🎮
+</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

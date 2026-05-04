@@ -1,0 +1,9 @@
+{% set game_title="Tetris 🟦" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div class="text-center">
+  <p class="text-white/70 mb-3">⬅➡ harakat · ⬆ aylantirish · ⬇ tushirish. Har qator — +10 ball.</p>
+  <div class="text-xl mb-3">Ball: <span id="tetris-score" class="text-neon-cyan font-bold">0</span></div>
+  <canvas id="tetris" width="240" height="480" class="game-canvas mx-auto"></canvas>
+</div>
+{% endblock %}
+{% block game_script %}<script src="{{ url_for('static', filename='js/games/tetris.js') }}"></script>{% endblock %}

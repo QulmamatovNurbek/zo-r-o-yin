@@ -1,0 +1,41 @@
+{% set game_title="X-O O'yini" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div x-data="ttt()" class="max-w-sm mx-auto text-center">
+  <div class="text-lg mb-4 min-h-[1.5rem] font-bold" :class="color" x-text="msg||'Sening yuring (X)'"></div>
+  <div class="grid grid-cols-3 gap-2">
+    <template x-for="(c,i) in board" :key="i">
+      <button @click="play(i)" class="aspect-square text-5xl font-display font-black rounded-xl bg-white/5 border border-white/10 hover:border-neon-cyan transition"
+        :class="c==='X'?'text-neon-cyan':c==='O'?'text-neon-pink':''" x-text="c"></button>
+    </template>
+  </div>
+  <button @click="reset()" class="mt-4 px-4 py-2 rounded-lg border border-white/20 hover:border-neon-pink text-sm">Qayta boshlash</button>
+</div>
+{% endblock %}
+{% block game_script %}<script>
+function ttt(){return {
+  board: Array(9).fill(''), turn:'X', msg:'', color:'', done:false,
+  lines:[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]],
+  winner(b){ for(const l of this.lines){const[a,b2,c]=l; if(b[a]&&b[a]===b[b2]&&b[a]===b[c]) return b[a];} return null; },
+  play(i){ if(this.done||this.board[i]||this.turn!=='X') return;
+    this.board[i]='X'; if(this.check()) return; this.turn='O';
+    setTimeout(()=>this.botMove(),350);
+  },
+  botMove(){
+    if(this.done) return;
+    const empty=this.board.map((c,i)=>c?null:i).filter(x=>x!==null);
+    // sodda AI: yutuq -> bloklash -> markaz -> tasodif
+    for(const i of empty){const t=[...this.board]; t[i]='O'; if(this.winner(t)===''+'O'){this.board[i]='O'; this.check(); this.turn='X'; return;}}
+    for(const i of empty){const t=[...this.board]; t[i]='X'; if(this.winner(t)==='X'){this.board[i]='O'; this.check(); this.turn='X'; return;}}
+    const pick = empty.includes(4)?4:empty[Math.floor(Math.random()*empty.length)];
+    this.board[pick]='O'; this.check(); this.turn='X';
+  },
+  check(){
+    const w=this.winner(this.board);
+    if(w==='X'){this.msg='🎉 Yutding! +15 ball'; this.color='text-neon-lime'; this.done=true; awardPoints('tictactoe',15); return true;}
+    if(w==='O'){this.msg='😢 Yutqazding'; this.color='text-neon-pink'; this.done=true; return true;}
+    if(!this.board.includes('')){this.msg='Durang'; this.color='text-neon-yellow'; this.done=true; return true;}
+    return false;
+  },
+  reset(){ this.board=Array(9).fill(''); this.turn='X'; this.msg=''; this.done=false; }
+}}
+</script>{% endblock %}

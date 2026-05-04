@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="font-display text-4xl font-black mb-8">🏆 Eng zo'r o'yinchilar</h1>
+<div class="rounded-2xl border border-white/10 overflow-hidden bg-white/5">
+  <table class="w-full text-left">
+    <thead class="bg-white/10 text-sm uppercase tracking-wider text-white/70">
+      <tr><th class="px-4 py-3">#</th><th class="px-4 py-3">Foydalanuvchi</th><th class="px-4 py-3 text-right">Ball</th></tr>
+    </thead>
+    <tbody>
+    {% for u in users %}
+      <tr class="border-t border-white/5 hover:bg-white/5">
+        <td class="px-4 py-3 font-display font-bold
+          {% if loop.index==1 %}text-neon-yellow{% elif loop.index==2 %}text-neon-cyan{% elif loop.index==3 %}text-neon-pink{% endif %}">
+          {% if loop.index==1 %}🥇{% elif loop.index==2 %}🥈{% elif loop.index==3 %}🥉{% else %}{{ loop.index }}{% endif %}
+        </td>
+        <td class="px-4 py-3">
+          <div class="font-bold">{{ u.username }}</div>
+          <div class="text-xs text-white/50">{{ u.rank_title }}</div>
+        </td>
+        <td class="px-4 py-3 text-right font-bold text-neon-cyan">{{ u.points }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="3" class="px-4 py-8 text-center text-white/50">Hali o'yinchilar yo'q. Birinchi bo'l!</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

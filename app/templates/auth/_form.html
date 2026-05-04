@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto mt-8 p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur shadow-glow">
+  <h1 class="font-display text-3xl font-black text-center mb-1">{{ title }}</h1>
+  <p class="text-center text-white/60 mb-6">{{ subtitle }}</p>
+  <form method="POST" class="space-y-4">
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type != 'submit' %}
+      <div>
+        <label class="block text-sm text-white/70 mb-1">{{ field.label.text }}</label>
+        {{ field(class_="w-full px-4 py-3 rounded-lg bg-bg-800 border border-white/10 focus:border-neon-cyan focus:outline-none focus:shadow-cyan transition") }}
+        {% for e in field.errors %}<p class="text-xs text-neon-pink mt-1">{{ e }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="w-full py-3 rounded-lg font-bold bg-gradient-to-r from-neon-pink to-neon-purple shadow-pink hover:scale-[1.02] transition">{{ form.submit.label.text }}</button>
+  </form>
+  <div class="mt-6 text-center text-sm text-white/60">{{ footer | safe }}</div>
+</div>
+{% endblock %}

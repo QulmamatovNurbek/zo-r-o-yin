@@ -1,0 +1,38 @@
+{% set game_title="Tosh-Qaychi-Qog'oz" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div x-data="rps()" class="text-center">
+  <div class="grid grid-cols-2 gap-6 mb-8 max-w-md mx-auto">
+    <div><div class="text-sm text-white/60">Sen</div><div class="text-7xl my-3" x-text="userPick||'❓'"></div></div>
+    <div><div class="text-sm text-white/60">Bot</div><div class="text-7xl my-3" x-text="botPick||'❓'"></div></div>
+  </div>
+  <div class="text-2xl font-bold mb-6 min-h-[2rem]" :class="resultColor" x-text="result"></div>
+  <div class="flex justify-center gap-3 flex-wrap">
+    <template x-for="c in choices">
+      <button @click="play(c)" class="text-5xl w-20 h-20 rounded-2xl bg-white/5 border border-white/10 hover:border-neon-cyan hover:scale-110 transition" x-text="c"></button>
+    </template>
+  </div>
+  <div class="mt-6 flex flex-col items-center gap-4">
+    <div class="text-white/70">Yutuqlar: <span class="text-neon-lime font-bold" x-text="wins"></span> · Mag'lubiyat: <span class="text-neon-pink font-bold" x-text="losses"></span></div>
+    <button @click="reset()" class="px-6 py-2 text-sm rounded-lg border border-white/20 hover:border-neon-pink transition">Qayta boshlash</button>
+  </div>
+</div>
+{% endblock %}
+{% block game_script %}<script>
+function rps(){return {
+  choices:['✊','✋','✌'], userPick:'', botPick:'', result:'', resultColor:'', wins:0, losses:0, playing:false,
+  play(c){ 
+    if(this.playing) return;
+    this.playing = true;
+    if(document.activeElement) document.activeElement.blur(); // Enter bosib turishni to'xtatadi
+    this.userPick=c; this.botPick=this.choices[Math.floor(Math.random()*3)];
+    const beats={'✊':'✌','✋':'✊','✌':'✋'};
+    if(c===this.botPick){this.result="Durang!"; this.resultColor='text-neon-yellow';}
+    else if(beats[c]===this.botPick){this.result='Yutding! +10 ball'; this.resultColor='text-neon-lime'; this.wins++; awardPoints('rps',10);}
+    else {this.result="Yutqazding!"; this.resultColor='text-neon-pink'; this.losses++;}
+    setTimeout(() => { this.playing = false; }, 150);
+  },
+  reset(){
+    this.userPick=''; this.botPick=''; this.result=''; this.wins=0; this.losses=0;
+  }
+}}
+</script>{% endblock %}

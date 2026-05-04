@@ -1,0 +1,12 @@
+{% set game_title="Pong 🏓" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div class="text-center">
+  <p class="text-white/70 mb-3">⬆⬇ yoki sichqoncha bilan o'yna. 5 ochkogacha. Yutsang +30 ball.</p>
+  <div class="text-xl mb-3">Sen: <span id="p1" class="text-neon-cyan font-bold">0</span> · Bot: <span id="p2" class="text-neon-pink font-bold">0</span></div>
+  <canvas id="pong" width="600" height="380" class="game-canvas mx-auto"></canvas>
+  <div class="mt-4">
+    <button onclick="location.reload()" class="px-4 py-2 text-sm rounded-lg border border-white/20 hover:border-neon-pink transition">Qayta boshlash</button>
+  </div>
+</div>
+{% endblock %}
+{% block game_script %}<script src="{{ url_for('static', filename='js/games/pong.js') }}"></script>{% endblock %}

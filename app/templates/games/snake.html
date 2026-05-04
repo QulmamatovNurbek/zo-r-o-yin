@@ -1,0 +1,10 @@
+{% set game_title="Ilon O'yini 🐍" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div class="text-center">
+  <p class="text-white/70 mb-3">Strelkalar yoki WASD bilan boshqar. Har ovqat — +1 ball.</p>
+  <div class="text-xl mb-3">Ball: <span id="snake-score" class="text-neon-cyan font-bold">0</span></div>
+  <canvas id="snake" width="400" height="400" class="game-canvas mx-auto"></canvas>
+  <div><button id="snake-restart" class="mt-4 px-4 py-2 rounded-lg border border-white/20 hover:border-neon-pink">Qayta boshlash</button></div>
+</div>
+{% endblock %}
+{% block game_script %}<script src="{{ url_for('static', filename='js/games/snake.js') }}"></script>{% endblock %}

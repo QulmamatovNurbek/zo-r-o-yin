@@ -1,0 +1,36 @@
+{% set game_title="Xotira Sinovi" %}{% extends "games/_layout.html" %}
+{% block game %}
+<div x-data="mem()" x-init="init()" class="max-w-md mx-auto text-center">
+  <div class="mb-4 text-white/70">Juftliklar: <span class="text-neon-cyan font-bold" x-text="found"></span>/8 · Yurishlar: <span x-text="moves"></span></div>
+  <div class="grid grid-cols-4 gap-2">
+    <template x-for="(c,i) in cards" :key="i">
+      <button @click="flip(i)" class="aspect-square text-3xl rounded-xl border transition"
+        :class="c.open||c.matched?'bg-gradient-to-br from-neon-purple to-neon-pink border-neon-pink':'bg-white/5 border-white/10 hover:border-neon-cyan'">
+        <span x-show="c.open||c.matched" x-text="c.v"></span>
+      </button>
+    </template>
+  </div>
+  <div class="mt-4 text-lg font-bold min-h-[1.5rem]" :class="color" x-text="msg"></div>
+  <button @click="init()" class="mt-3 px-4 py-2 rounded-lg border border-white/20 text-sm">Yangi o'yin</button>
+</div>
+{% endblock %}
+{% block game_script %}<script>
+function mem(){return {
+  cards:[], first:null, busy:false, found:0, moves:0, msg:'', color:'',
+  init(){ const e=['🍎','🍌','🍓','🍇','🥑','🥝','🍒','🍍'];
+    const arr=[...e,...e].sort(()=>Math.random()-0.5).map(v=>({v,open:false,matched:false}));
+    this.cards=arr; this.first=null; this.busy=false; this.found=0; this.moves=0; this.msg=''; },
+  flip(i){ if(this.busy) return; const c=this.cards[i]; if(c.open||c.matched) return;
+    c.open=true;
+    if(this.first===null){this.first=i; return;}
+    this.moves++;
+    if(this.cards[this.first].v===c.v){
+      this.cards[this.first].matched=true; c.matched=true; this.first=null; this.found++;
+      if(this.found===8){this.msg='🎉 Yakunlading! +25 ball'; this.color='text-neon-lime'; awardPoints('memory',25);}
+    } else {
+      this.busy=true;
+      const f=this.first; setTimeout(()=>{this.cards[f].open=false; c.open=false; this.first=null; this.busy=false;},700);
+    }
+  }
+}}
+</script>{% endblock %}
